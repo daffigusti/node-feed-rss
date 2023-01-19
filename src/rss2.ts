@@ -3,7 +3,7 @@ import { generator } from "./config";
 import { Feed } from "./feed";
 import { Author, Category, Enclosure, Item } from "./typings";
 import { sanitize } from "./utils";
-
+const date = require("date-and-time");
 /**
  * Returns a RSS 2.0 feed
  */
@@ -20,7 +20,11 @@ export default (ins: Feed) => {
         title: { _text: options.title },
         link: { _text: sanitize(options.link) },
         description: { _text: options.description },
-        lastBuildDate: { _text: options.updated ? options.updated.toUTCString() : new Date().toUTCString() },
+        lastBuildDate: {
+          _text: options.updated
+            ? date.format(options.updated, "ddd, DD MMM YYYY hh:mm:ss Z")
+            : new Date().toUTCString(),
+        },
         docs: { _text: options.docs ? options.docs : "https://validator.w3.org/feed/docs/rss2.html" },
         generator: { _text: options.generator || generator },
       },
@@ -51,7 +55,7 @@ export default (ins: Feed) => {
     base.rss.channel.image = {
       title: { _text: options.title },
       url: { _text: options.image },
-      link: { _text: sanitize(options.link) }
+      link: { _text: sanitize(options.link) },
     };
   }
 
@@ -104,8 +108,8 @@ export default (ins: Feed) => {
     base.rss.channel["atom:link"] = {
       _attributes: {
         href: sanitize(options.hub),
-        rel: "hub"
-      }
+        rel: "hub",
+      },
     };
   }
 
@@ -125,7 +129,9 @@ export default (ins: Feed) => {
     if (entry.link) {
       item.link = { _text: sanitize(entry.link) };
     }
-
+    if (entry.thumbnail) {
+      item.thumbnail = { _text: sanitize(entry.thumbnail) };
+    }
     if (entry.guid) {
       item.guid = { _text: entry.guid };
     } else if (entry.id) {
@@ -135,7 +141,7 @@ export default (ins: Feed) => {
     }
 
     if (entry.date) {
-      item.pubDate = { _text: entry.date.toUTCString() };
+      item.pubDate = { _text: date.format(entry.date, "ddd, DD MMM YYYY hh:mm:ss Z") };
     }
 
     if (entry.published) {
@@ -144,6 +150,20 @@ export default (ins: Feed) => {
 
     if (entry.description) {
       item.description = { _cdata: entry.description };
+    }
+
+    if (entry.article) {
+      isContent = true;
+
+      let article = {
+        title: { _cdata: entry.article.title },
+        url: { _text: entry.article.url },
+        thumbnail: { _text: entry.article.thumbnail },
+      };
+      item["content:encoded"] = {};
+      // item.article = [];
+      // item.article.push(article);
+      item["content:encoded"].article = article;
     }
 
     if (entry.content) {

@@ -3,6 +3,7 @@ export interface Item {
   id?: string;
   link: string;
   date: Date;
+  thumbnail: string;
 
   description?: string;
   content?: string;
@@ -19,6 +20,7 @@ export interface Item {
   contributor?: Author[];
 
   published?: Date;
+  article?: ArticleContent;
   copyright?: string;
 
   extensions?: Extension[];
@@ -64,6 +66,12 @@ export interface FeedOptions {
   image?: string;
   favicon?: string;
   copyright: string;
+}
+
+export interface ArticleContent {
+  title?: string;
+  url?: string;
+  thumbnail?: string;
 }
 
 export interface Extension {
