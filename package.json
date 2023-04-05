@@ -23,7 +23,7 @@
         "blog"
     ],
     "dependencies": {
-        "date-and-time": "^2.4.2",
+        "date-and-time": "^2.4.3",
         "xml-js": "^1.6.11"
     },
     "devDependencies": {
